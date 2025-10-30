@@ -15,7 +15,7 @@ export default function Navbar() {
     <nav className="flex items-center justify-between px-8 py-4 bg-gray-900 text-white">
       <Link to="/" className="text-2xl font-bold">EduApp</Link>
 
-      <div className="grow mx-8 max-w-lg">
+      <div className="grow mx-8 max-w-lg bg-white rounded-lg">
         <SearchBox />
       </div>
 
