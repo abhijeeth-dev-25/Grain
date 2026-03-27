@@ -1,7 +1,24 @@
+/**
+ * @fileoverview Controller for user authentication operations
+ * Handles user signup and login processes.
+ */
+
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+/**
+ * Register a new user
+ * @function signup
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.username - User's chosen username
+ * @param {string} req.body.email - User's email address
+ * @param {string} req.body.password - User's password (will be hashed)
+ * @param {string} [req.body.role] - Optional role assigned to the user
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with success message and new user ID or an error message
+ */
 exports.signup = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
@@ -16,6 +33,16 @@ exports.signup = async (req, res) => {
   }
 };
 
+/**
+ * Authenticate an existing user and return a JWT
+ * @function login
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.email - User's email address
+ * @param {string} req.body.password - User's password (plaintext)
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with a JWT on success or an error message if invalid
+ */
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;

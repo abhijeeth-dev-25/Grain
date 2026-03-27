@@ -1,6 +1,25 @@
+/**
+ * @fileoverview Controller for course-related operations
+ * Handles CRUD operations and listing of courses.
+ */
+
 const Course = require("../models/course.model");
 
-// Add new course
+/**
+ * Creates a new course entry in the database
+ * @function addCourse
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.title - Course title
+ * @param {string} req.body.description - Detailed description of the course
+ * @param {number} req.body.price - Course price
+ * @param {string} req.body.imageUrl - URL to course thumbnail/image
+ * @param {Array<Object>} req.body.episodes - List of episodes for the course
+ * @param {Object} req.user - Authenticated user details from middleware
+ * @param {string} req.user.id - The ID of the authenticated user creating the course
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with the created course or an error message
+ */
 exports.addCourse = async (req, res) => {
   try {
     const { title, description, price, imageUrl, episodes } = req.body;
@@ -13,7 +32,13 @@ exports.addCourse = async (req, res) => {
   }
 };
 
-// Show all courses (card view)
+/**
+ * Retrieves a list of all courses (optimized for card view)
+ * @function getCourses
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with an array of course objects
+ */
 exports.getCourses = async (req, res) => {
   try {
     const courses = await Course.find({}, "title description price imageUrl");
@@ -23,7 +48,15 @@ exports.getCourses = async (req, res) => {
   }
 };
 
-// Show full course details
+/**
+ * Retrieves full details for a specific course by its ID
+ * @function getCourseById
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request URL parameters
+ * @param {string} req.params.id - The ID of the course to retrieve
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with the populated course object or an error message
+ */
 exports.getCourseById = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id).populate("createdBy", "username");
@@ -33,7 +66,15 @@ exports.getCourseById = async (req, res) => {
   }
 };
 
-// Search courses
+/**
+ * Searches for courses matching the given name query
+ * @function searchCourses
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - URL query parameters
+ * @param {string} [req.query.name] - Partial or full text to search in course titles
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with an array of matching courses or an error message
+ */
 exports.searchCourses = async (req, res) => {
   try {
     const { name } = req.query;
@@ -44,7 +85,16 @@ exports.searchCourses = async (req, res) => {
   }
 };
 
-// Update course
+/**
+ * Updates an existing course by its ID
+ * @function updateCourse
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request URL parameters
+ * @param {string} req.params.id - Group ID to update
+ * @param {Object} req.body - Fields to update in the course
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with the updated course or an error message
+ */
 exports.updateCourse = async (req, res) => {
   try {
     const course = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -55,7 +105,15 @@ exports.updateCourse = async (req, res) => {
   }
 };
 
-// Delete course
+/**
+ * Deletes a course by its ID
+ * @function deleteCourse
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request URL parameters
+ * @param {string} req.params.id - The ID of the course to delete
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with a success acknowledgment or an error message
+ */
 exports.deleteCourse = async (req, res) => {
   try {
     const course = await Course.findByIdAndDelete(req.params.id);
