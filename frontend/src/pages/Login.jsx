@@ -28,12 +28,14 @@ export default function Login() {
           placeholder="Email"
           className="w-full mb-3 p-2 border rounded"
           onChange={(e) => setForm({ ...form, email: e.target.value })}
+          required
         />
         <input
           type="password"
           placeholder="Password"
           className="w-full mb-4 p-2 border rounded"
           onChange={(e) => setForm({ ...form, password: e.target.value })}
+          required
         />
         <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
           Login

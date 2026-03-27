@@ -27,7 +27,9 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <Link to="/add-course" className="hover:text-gray-300">Add Course</Link>
+            {user?.role === "admin" && (
+              <Link to="/add-course" className="hover:text-gray-300">Add Course</Link>
+            )}
             <Link to="/profile" className="hover:text-gray-300">Profile</Link>
             <button onClick={handleLogout} className="hover:text-red-400">Logout</button>
           </>

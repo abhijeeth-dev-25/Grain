@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Signup() {
   const { login } = useAuth();
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [form, setForm] = useState({ username: "", email: "", password: "", role: "user" });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -41,19 +41,30 @@ export default function Signup() {
           placeholder="Username"
           className="w-full mb-3 p-2 border rounded"
           onChange={(e) => setForm({ ...form, username: e.target.value })}
+          required
         />
         <input
           type="email"
           placeholder="Email"
           className="w-full mb-3 p-2 border rounded"
           onChange={(e) => setForm({ ...form, email: e.target.value })}
+          required
         />
         <input
           type="password"
           placeholder="Password"
-          className="w-full mb-4 p-2 border rounded"
+          className="w-full mb-3 p-2 border rounded"
           onChange={(e) => setForm({ ...form, password: e.target.value })}
+          required
         />
+        <select
+          className="w-full mb-4 p-2 border rounded bg-white"
+          value={form.role}
+          onChange={(e) => setForm({ ...form, role: e.target.value })}
+        >
+          <option value="user">Student</option>
+          <option value="admin">Instructor / Admin</option>
+        </select>
         <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
           Signup
         </button>
