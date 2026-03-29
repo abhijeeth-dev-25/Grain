@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
-  const { token, logout } = useAuth();
+  const { token, user, logout } = useAuth();
   const [profile, setProfile] = useState(null);
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,8 +48,10 @@ export default function Profile() {
               <div className="mt-6">
                 <h3 className="font-semibold">Account</h3>
                 <ul className="mt-2 space-y-2 text-sm">
-                  <li className="text-blue-600">Wishlist</li>
-                  <li className="text-blue-600">Settings</li>
+                  <li><Link to="/" className="text-blue-600 hover:underline">Wishlist</Link></li>
+                  {user?.role === "admin" && (
+                    <li><Link to="/settings" className="text-blue-600 hover:underline">Settings</Link></li>
+                  )}
                 </ul>
               </div>
             </>

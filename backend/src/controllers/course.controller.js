@@ -33,6 +33,24 @@ exports.addCourse = async (req, res) => {
 };
 
 /**
+ * Retrieves courses created by the currently authenticated admin
+ * @function getMyCourses
+ * @param {Object} req - Express request object
+ * @param {Object} req.user - Authenticated user from middleware
+ * @param {string} req.user.id - The admin's user ID
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with an array of the admin's courses
+ */
+exports.getMyCourses = async (req, res) => {
+  try {
+    const courses = await Course.find({ createdBy: req.user.id });
+    res.json(courses);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching your courses", error: err.message });
+  }
+};
+
+/**
  * Retrieves a list of all courses (optimized for card view)
  * @function getCourses
  * @param {Object} req - Express request object
@@ -41,7 +59,7 @@ exports.addCourse = async (req, res) => {
  */
 exports.getCourses = async (req, res) => {
   try {
-    const courses = await Course.find({}, "title description price imageUrl");
+    const courses = await Course.find({}, "title description price imageUrl createdBy");
     res.json(courses);
   } catch (err) {
     res.status(500).json({ message: "Error fetching courses" });
@@ -97,9 +115,15 @@ exports.searchCourses = async (req, res) => {
  */
 exports.updateCourse = async (req, res) => {
   try {
-    const course = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ message: "Course not found" });
-    res.json({ message: "Course updated", course });
+
+    if (course.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "You are not authorized to modify this course" });
+    }
+
+    const updatedCourse = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ message: "Course updated", course: updatedCourse });
   } catch (err) {
     res.status(500).json({ message: "Error updating course", error: err.message });
   }
@@ -116,8 +140,14 @@ exports.updateCourse = async (req, res) => {
  */
 exports.deleteCourse = async (req, res) => {
   try {
-    const course = await Course.findByIdAndDelete(req.params.id);
+    const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ message: "Course not found" });
+
+    if (course.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "You are not authorized to delete this course" });
+    }
+
+    await Course.findByIdAndDelete(req.params.id);
     res.json({ message: "Course deleted" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting course", error: err.message });

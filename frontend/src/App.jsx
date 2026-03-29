@@ -6,6 +6,8 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import AddCourse from "./pages/AddCourse";
+import EditCourse from "./pages/EditCourse";
+import Settings from "./pages/Settings";
 import CoursePage from "./pages/CoursePage";
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/add-course" element={<AddCourse />} />
+          <Route path="/edit-course/:id" element={<EditCourse />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/course/:id" element={<CoursePage/>} />
         </Routes>
       </Router>

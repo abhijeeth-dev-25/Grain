@@ -5,7 +5,7 @@
 
 const router = require("express").Router();
 const { protect, admin } = require("../middleware/auth.middleware");
-const { addCourse, getCourses, getCourseById, searchCourses, updateCourse, deleteCourse } = require("../controllers/course.controller");
+const { addCourse, getCourses, getCourseById, getMyCourses, searchCourses, updateCourse, deleteCourse } = require("../controllers/course.controller");
 
 /**
  * @route POST /add
@@ -27,6 +27,13 @@ router.get("/", getCourses);
  * @access Public
  */
 router.get("/search", searchCourses);
+
+/**
+ * @route GET /my-courses
+ * @description Retrieve courses created by the logged-in admin
+ * @access Private (Admin only)
+ */
+router.get("/my-courses", protect, admin, getMyCourses);
 
 /**
  * @route GET /:id

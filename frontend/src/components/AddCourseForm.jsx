@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-export default function AddCourseForm() {
+export default function AddCourseForm({ courseId }) {
   const { token } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(!!courseId);
   const [course, setCourse] = useState({
     title: "",
     description: "",
@@ -11,6 +14,29 @@ export default function AddCourseForm() {
     imageUrl: "",
     episodes: [],
   });
+
+  const isEditing = !!courseId;
+
+  useEffect(() => {
+    if (isEditing) {
+      axios.get(`/api/courses/${courseId}`)
+        .then((res) => {
+          const fetchCourse = res.data.course || res.data;
+          setCourse({
+            title: fetchCourse.title || "",
+            description: fetchCourse.description || "",
+            price: fetchCourse.price || "",
+            imageUrl: fetchCourse.imageUrl || "",
+            episodes: fetchCourse.episodes || [],
+          });
+        })
+        .catch((err) => {
+          console.error("Error fetching course for edit", err);
+          alert("Failed to load course details.");
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [courseId, isEditing]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,14 +48,22 @@ export default function AddCourseForm() {
         episodes: Array.isArray(course.episodes) ? course.episodes : [],
       };
 
-      await axios.post("/api/courses/add", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert("✅ Course added!");
-      setCourse({ title: "", description: "", price: "", imageUrl: "", episodes: [] });
+      if (isEditing) {
+        await axios.put(`/api/courses/${courseId}`, payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("✅ Course updated!");
+        navigate(`/course/${courseId}`);
+      } else {
+        const res = await axios.post("/api/courses/add", payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("✅ Course added!");
+        navigate(`/course/${res.data.course._id}`);
+      }
     } catch (err) {
       console.error(err);
-      alert("❌ Error adding course");
+      alert(isEditing ? "❌ Error updating course" : "❌ Error adding course");
     }
   };
 
@@ -53,12 +87,14 @@ export default function AddCourseForm() {
     });
   };
 
+  if (loading) return <div className="text-gray-500">Loading course...</div>;
+
   return (
     <form onSubmit={handleSubmit} className="bg-white p-8 shadow-lg rounded-lg w-full max-w-2xl">
-      <h2 className="text-2xl font-bold mb-4">Add Course</h2>
+      <h2 className="text-2xl font-bold mb-4">{isEditing ? "Edit Course" : "Add Course"}</h2>
 
       {!token && (
-        <p className="text-sm text-red-500 mb-4">You must be logged in to add a course.</p>
+        <p className="text-sm text-red-500 mb-4">You must be logged in to {isEditing ? "edit" : "add"} a course.</p>
       )}
 
       <div className="grid grid-cols-1 gap-3">
@@ -147,7 +183,7 @@ export default function AddCourseForm() {
         )}
 
         <button disabled={!token} className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-4">
-          Add Course
+          {isEditing ? "Update Course" : "Add Course"}
         </button>
       </div>
     </form>
