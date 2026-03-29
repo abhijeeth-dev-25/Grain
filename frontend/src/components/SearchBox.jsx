@@ -31,7 +31,7 @@ export default function SearchBox() {
         className="w-full px-4 py-2 rounded-lg text-black"
       />
       {results.length > 0 && (
-        <div className="absolute bg-white text-black w-full mt-1 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-50 bg-white text-black w-full mt-1 rounded-lg shadow-lg max-h-60 overflow-y-auto">
           {results.map((course) => (
             <div key={course._id} className="p-2 hover:bg-gray-100 cursor-pointer">
               {course.title}

@@ -4,6 +4,7 @@
  */
 
 const jwt = require("jsonwebtoken");
+const Blocklist = require("../models/blocklist.model");
 
 /**
  * Middleware to protect routes that require authentication
@@ -16,11 +17,18 @@ const jwt = require("jsonwebtoken");
  * @param {Function} next - Express next middleware function
  * @returns {void} Calls next() on success, or sends a 401 response on failure
  */
-exports.protect = (req, res, next) => {
+exports.protect = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ message: "No token provided" });
 
   try {
+    // 1. Check if token is in the blocklist
+    const isBlocklisted = await Blocklist.findOne({ token });
+    if (isBlocklisted) {
+      return res.status(401).json({ message: "Token invalidated" });
+    }
+
+    // 2. Verify token
     const decoded = jwt.verify(token, "SECRET_KEY");
     req.user = decoded;
     next();

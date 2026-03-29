@@ -40,10 +40,19 @@ export const AuthProvider = ({ children }) => {
     setToken(data.token);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    if (token) {
+      try {
+        await axios.post("/api/auth/logout", {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } catch (err) {
+        console.error("Logout error:", err);
+      }
+    }
     setToken(null);
     setUser(null);
-    localStorage.removeItem("token"); // ensure it's removed immediately
+    localStorage.removeItem("token");
   };
 
   // Setup axio interceptor to auto-logout the user if any request returns exactly 401

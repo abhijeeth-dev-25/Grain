@@ -8,8 +8,11 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/"); // Always go back to landing page
   };
+
+  const isStudent = token && user?.role === "user";
+  const isAdmin = token && user?.role === "admin";
 
   return (
     <nav className="flex items-center justify-between px-8 py-4 bg-gray-900 text-white">
@@ -21,15 +24,19 @@ export default function Navbar() {
 
       <div className="flex items-center space-x-4">
         {!token ? (
+          /* Anonymous user */
           <>
             <Link to="/login" className="hover:text-gray-300">Login</Link>
             <Link to="/signup" className="hover:text-gray-300">Signup</Link>
           </>
         ) : (
           <>
-            {user?.role === "admin" && (
+            {/* Admin only */}
+            {isAdmin && (
               <Link to="/add-course" className="hover:text-gray-300">Add Course</Link>
             )}
+
+            {/* All logged-in users */}
             <Link to="/profile" className="hover:text-gray-300">Profile</Link>
             <button onClick={handleLogout} className="hover:text-red-400">Logout</button>
           </>

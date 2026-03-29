@@ -6,6 +6,7 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Blocklist = require("../models/blocklist.model");
 
 /**
  * Register a new user
@@ -52,9 +53,37 @@ exports.login = async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(400).json({ message: "Invalid password" });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, "SECRET_KEY", { expiresIn: "2h" });
+    const token = jwt.sign({ id: user._id, role: user.role }, "SECRET_KEY", { expiresIn: "1d" });
     res.json({ message: "Login successful", token });
   } catch (err) {
     res.status(500).json({ message: "Login failed", error: err.message });
+  }
+};
+
+/**
+ * Logout user and invalidate their JWT token
+ * @function logout
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with success message after blocklisting the token
+ */
+exports.logout = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(400).json({ message: "No token provided" });
+
+    // Decode token to get expiration time
+    const decoded = jwt.decode(token);
+    if (decoded && decoded.exp) {
+      // Save to blocklist
+      await Blocklist.create({
+        token: token,
+        expiresAt: new Date(decoded.exp * 1000) // Convert Unix timestamp to JS Date
+      });
+    }
+
+    res.json({ message: "Logout successful" });
+  } catch (err) {
+    res.status(500).json({ message: "Logout failed", error: err.message });
   }
 };

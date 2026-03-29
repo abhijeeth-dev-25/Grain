@@ -6,14 +6,17 @@ import { Heart } from "lucide-react";
 
 export default function CourseCard({ course }) {
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const isAdmin = user?.role === "admin";
+
   const handleAddToWishlist = async (e) => {
-    e.stopPropagation(); // Prevent navigation
+    e.stopPropagation();
+    // Anonymous — redirect to login
     if (!token) {
-      alert("Please log in to add to wishlist ❤️");
+      navigate("/login");
       return;
     }
 
@@ -27,7 +30,6 @@ export default function CourseCard({ course }) {
       setIsWishlisted(true);
     } catch (error) {
       console.error("❌ Error adding to wishlist:", error);
-      alert("Failed to add to wishlist");
     } finally {
       setLoading(false);
     }
@@ -56,21 +58,26 @@ export default function CourseCard({ course }) {
         </p>
       </div>
 
-      {/* ❤️ Wishlist button (bottom-right corner) */}
-      <div className="absolute bottom-3 right-3">
-        <button
-          onClick={handleAddToWishlist}
-          disabled={loading}
-          className="bg-white shadow-md rounded-full p-2 hover:shadow-lg transition-all"
-          title={isWishlisted ? "Added to wishlist" : "Add to wishlist"}
-        >
-          <Heart
-            className={`w-5 h-5 transition-all duration-300 ${
-              isWishlisted ? "text-red-500 fill-red-500" : "text-gray-400"
-            }`}
-          />
-        </button>
-      </div>
+      {/* ❤️ Wishlist button — hidden for admins */}
+      {!isAdmin && (
+        <div className="absolute bottom-3 right-3">
+          <button
+            onClick={handleAddToWishlist}
+            disabled={loading}
+            className="bg-white shadow-md rounded-full p-2 hover:shadow-lg transition-all"
+            title={!token ? "Login to wishlist" : isWishlisted ? "Added to wishlist" : "Add to wishlist"}
+          >
+            <Heart
+              className={`w-5 h-5 transition-all duration-300 ${
+                isWishlisted
+                  ? "text-black fill-black"
+                  : "text-black"
+              }`}
+            />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
+

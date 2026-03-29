@@ -34,18 +34,24 @@ const CoursePage = () => {
     );
 
   return (
-    <div className="flex w-full h-screen p-6 gap-4">
-      {/* Left - Playlist (40%) */}
-      <div className="w-2/5">
-        <PlaylistCard
-          episodes={course.episodes}
-          onSelectEpisode={setSelectedEpisode}
-        />
-      </div>
+    <div style={{
+      minHeight: "100vh", backgroundColor: "#f1f5f9",
+      padding: "40px 60px"
+    }}>
+      <div style={{ maxWidth: "1400px", margin: "0 auto", display: "grid", gridTemplateColumns: "300px 1fr", gap: "32px", height: "calc(100vh - 80px)" }}>
+        {/* Left - Playlist */}
+        <div style={{ height: "100%" }}>
+          <PlaylistCard
+            episodes={course.episodes}
+            onSelectEpisode={setSelectedEpisode}
+            selectedEpisode={selectedEpisode}
+          />
+        </div>
 
-      {/* Right - Video Player (60%) */}
-      <div className="w-3/5">
-        <VideoCard episode={selectedEpisode} />
+        {/* Right - Video Player */}
+        <div style={{ height: "100%" }}>
+          <VideoCard episode={selectedEpisode} course={course} />
+        </div>
       </div>
     </div>
   );

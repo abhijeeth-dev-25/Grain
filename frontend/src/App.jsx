@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -10,24 +11,43 @@ import EditCourse from "./pages/EditCourse";
 import Settings from "./pages/Settings";
 import CoursePage from "./pages/CoursePage";
 
+const hideNavbarRoutes = ["/login", "/signup"];
+
+function Layout() {
+  const location = useLocation();
+  const showNavbar = !hideNavbarRoutes.includes(location.pathname);
+
+  return (
+    <>
+      {showNavbar && <Navbar />}
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/course/:id" element={<CoursePage />} />
+
+        {/* Any logged-in user */}
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+
+        {/* Admin only */}
+        <Route path="/add-course" element={<ProtectedRoute role="admin"><AddCourse /></ProtectedRoute>} />
+        <Route path="/edit-course/:id" element={<ProtectedRoute role="admin"><EditCourse /></ProtectedRoute>} />
+      </Routes>
+    </>
+  );
+}
+
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/add-course" element={<AddCourse />} />
-          <Route path="/edit-course/:id" element={<EditCourse />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/course/:id" element={<CoursePage/>} />
-        </Routes>
+        <Layout />
       </Router>
     </AuthProvider>
   );
 }
 
 export default App;
+

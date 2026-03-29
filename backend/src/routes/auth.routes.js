@@ -4,7 +4,8 @@
  */
 
 const router = require("express").Router();
-const { signup, login } = require("../controllers/auth.controller");
+const { signup, login, logout } = require("../controllers/auth.controller");
+const { protect } = require("../middleware/auth.middleware");
 
 /**
  * @route POST /signup
@@ -19,5 +20,12 @@ router.post("/signup", signup);
  * @access Public
  */
 router.post("/login", login);
+
+/**
+ * @route POST /logout
+ * @description Logout user and blocklist current token
+ * @access Private
+ */
+router.post("/logout", protect, logout);
 
 module.exports = router;

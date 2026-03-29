@@ -41,7 +41,6 @@ export default function AddCourseForm({ courseId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // prepare payload: ensure price is a number and episodes is an array
       const payload = {
         ...course,
         price: Number(course.price) || 0,
@@ -87,105 +86,180 @@ export default function AddCourseForm({ courseId }) {
     });
   };
 
-  if (loading) return <div className="text-gray-500">Loading course...</div>;
+  if (loading) return <div style={{ color: "#6b7280", textAlign: "center", padding: "40px" }}>Loading course...</div>;
+
+  const btnBlack = {
+    background: "#0f0f0f", color: "white", padding: "12px 24px",
+    borderRadius: "8px", fontWeight: "600", fontSize: "14px",
+    border: "none", cursor: "pointer", transition: "background 0.2s"
+  };
+
+  const inputStyle = {
+    width: "100%", padding: "14px 16px",
+    background: "#f8fafc", border: "1px solid #e2e8f0",
+    borderRadius: "10px", fontSize: "15px",
+    color: "#0f0f0f", outline: "none", transition: "border-color 0.2s, box-shadow 0.2s"
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-8 shadow-lg rounded-lg w-full max-w-2xl">
-      <h2 className="text-2xl font-bold mb-4">{isEditing ? "Edit Course" : "Add Course"}</h2>
+    <div style={{ maxWidth: "800px", margin: "0 auto", width: "100%" }}>
+      {/* Header snippet */}
+      <div style={{ marginBottom: "32px" }}>
+        <h1 style={{ fontSize: "32px", fontWeight: "900", color: "#0f0f0f", letterSpacing: "-0.5px", margin: "0 0 8px" }}>
+          {isEditing ? "Edit Course" : "Create New Course"}
+        </h1>
+        <p style={{ color: "#6b7280", fontSize: "15px" }}>
+          {isEditing ? "Update details for your curriculum below." : "Fill out the details below to add a new course to your catalog."}
+        </p>
+      </div>
 
-      {!token && (
-        <p className="text-sm text-red-500 mb-4">You must be logged in to {isEditing ? "edit" : "add"} a course.</p>
-      )}
-
-      <div className="grid grid-cols-1 gap-3">
-        <input
-          type="text"
-          placeholder="Title"
-          className="w-full mb-1 p-2 border rounded"
-          value={course.title}
-          onChange={(e) => setCourse({ ...course, title: e.target.value })}
-          required
-        />
-
-        <textarea
-          placeholder="Description"
-          className="w-full mb-1 p-2 border rounded"
-          value={course.description}
-          onChange={(e) => setCourse({ ...course, description: e.target.value })}
-          required
-        />
-
-        <input
-          type="text"
-          placeholder="Cover Image URL"
-          className="w-full mb-1 p-2 border rounded"
-          value={course.imageUrl}
-          onChange={(e) => setCourse({ ...course, imageUrl: e.target.value })}
-        />
-
-        <div className="grid grid-cols-2 gap-3">
-          <input
-            type="number"
-            placeholder="Price"
-            className="w-full mb-1 p-2 border rounded"
-            value={course.price}
-            onChange={(e) => setCourse({ ...course, price: e.target.value })}
-            required
-          />
-          <div className="flex items-center">
-            <button type="button" onClick={addEpisode} className="ml-auto bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">Add Episode</button>
-          </div>
-        </div>
-
-        {/* Episodes list */}
-        {course.episodes && course.episodes.length > 0 && (
-          <div className="mt-4">
-            <h3 className="font-semibold mb-2">Episodes ({course.episodes.length})</h3>
-            <div className="space-y-4">
-              {course.episodes.map((ep, idx) => (
-                <div key={idx} className="p-3 border rounded">
-                  <div className="flex justify-between items-center mb-2">
-                    <strong>Episode {idx + 1}</strong>
-                    <button type="button" onClick={() => removeEpisode(idx)} className="text-red-500">Remove</button>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Episode title"
-                    className="w-full mb-1 p-2 border rounded"
-                    value={ep.title}
-                    onChange={(e) => updateEpisode(idx, 'title', e.target.value)}
-                    required
-                  />
-                  <input
-                    type="text"
-                    placeholder="Episode video URL"
-                    className="w-full mb-1 p-2 border rounded"
-                    value={ep.videoUrl}
-                    onChange={(e) => updateEpisode(idx, 'videoUrl', e.target.value)}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Episode image URL"
-                    className="w-full mb-1 p-2 border rounded"
-                    value={ep.imageUrl}
-                    onChange={(e) => updateEpisode(idx, 'imageUrl', e.target.value)}
-                  />
-                  <textarea
-                    placeholder="Episode description"
-                    className="w-full mb-1 p-2 border rounded"
-                    value={ep.description}
-                    onChange={(e) => updateEpisode(idx, 'description', e.target.value)}
-                  />
-                </div>
-              ))}
-            </div>
+      <form onSubmit={handleSubmit} style={{
+        background: "white", padding: "40px",
+        borderRadius: "20px", boxShadow: "0 4px 24px rgba(0,0,0,0.06)"
+      }}>
+        {!token && (
+          <div style={{ background: "#fee2e2", color: "#991b1b", padding: "12px 16px", borderRadius: "8px", marginBottom: "24px", fontSize: "14px", fontWeight: "500" }}>
+            You must be logged in to {isEditing ? "edit" : "add"} a course.
           </div>
         )}
 
-        <button disabled={!token} className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-4">
-          {isEditing ? "Update Course" : "Add Course"}
-        </button>
-      </div>
-    </form>
+        {/* ── Basic Info ── */}
+        <div style={{ display: "grid", gap: "20px", marginBottom: "40px" }}>
+          <div>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: "700", color: "#374151", marginBottom: "8px" }}>COURSE TITLE</label>
+            <input
+              type="text" placeholder="e.g. Advanced React Patterns" style={inputStyle}
+              value={course.title} onChange={(e) => setCourse({ ...course, title: e.target.value })} required
+              onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)"; }}
+              onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: "700", color: "#374151", marginBottom: "8px" }}>DESCRIPTION</label>
+            <textarea
+              placeholder="What will students learn?" style={{ ...inputStyle, minHeight: "120px", resize: "vertical" }}
+              value={course.description} onChange={(e) => setCourse({ ...course, description: e.target.value })} required
+              onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)"; }}
+              onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+            />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "20px" }}>
+            <div>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: "700", color: "#374151", marginBottom: "8px" }}>COVER IMAGE URL</label>
+              <input
+                type="url" placeholder="https://..." style={inputStyle}
+                value={course.imageUrl} onChange={(e) => setCourse({ ...course, imageUrl: e.target.value })}
+                onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)"; }}
+                onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: "700", color: "#374151", marginBottom: "8px" }}>PRICE (₹)</label>
+              <input
+                type="number" placeholder="0 for Free" style={inputStyle} min="0" step="any"
+                value={course.price} onChange={(e) => setCourse({ ...course, price: e.target.value })} required
+                onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)"; }}
+                onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* ── Divider ── */}
+        <div style={{ height: "1px", background: "#f1f5f9", margin: "40px -40px" }} />
+
+        {/* ── Curriculum ── */}
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+            <div>
+              <h3 style={{ fontSize: "18px", fontWeight: "800", color: "#0f0f0f", margin: "0 0 4px" }}>Curriculum</h3>
+              <p style={{ color: "#6b7280", fontSize: "13px" }}>Add video episodes for your students.</p>
+            </div>
+            <button
+              type="button" onClick={addEpisode}
+              style={{
+                background: "#f1f5f9", color: "#0f0f0f", padding: "10px 18px",
+                borderRadius: "8px", fontWeight: "600", fontSize: "13px", border: "none", cursor: "pointer"
+              }}
+              onMouseEnter={e => e.target.style.background = "#e2e8f0"}
+              onMouseLeave={e => e.target.style.background = "#f1f5f9"}
+            >
+              + Add Episode
+            </button>
+          </div>
+
+          {course.episodes && course.episodes.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              {course.episodes.map((ep, idx) => (
+                <div key={idx} style={{
+                  background: "#fafafa", border: "1px solid #f1f5f9",
+                  borderRadius: "14px", padding: "24px", position: "relative"
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <div style={{ width: "24px", height: "24px", borderRadius: "6px", background: "#e0e7ff", color: "#4f46e5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: "800" }}>
+                        {idx + 1}
+                      </div>
+                      <strong style={{ fontSize: "15px", color: "#0f0f0f" }}>Episode Details</strong>
+                    </div>
+                    <button
+                      type="button" onClick={() => removeEpisode(idx)}
+                      style={{ background: "none", border: "none", color: "#ef4444", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  <div style={{ display: "grid", gap: "16px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                      <input
+                        type="text" placeholder="Episode Title" style={inputStyle}
+                        value={ep.title} onChange={(e) => updateEpisode(idx, 'title', e.target.value)} required
+                        onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)"; }}
+                        onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+                      />
+                      <input
+                        type="url" placeholder="Video URL (YouTube/Vimeo)" style={inputStyle}
+                        value={ep.videoUrl} onChange={(e) => updateEpisode(idx, 'videoUrl', e.target.value)}
+                        onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)"; }}
+                        onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+                      />
+                    </div>
+                    <textarea
+                      placeholder="Brief description of this episode..." style={{ ...inputStyle, minHeight: "80px", resize: "vertical" }}
+                      value={ep.description} onChange={(e) => updateEpisode(idx, 'description', e.target.value)}
+                      onFocus={e => { e.target.style.borderColor = "#7c3aed"; e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)"; }}
+                      onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{
+              padding: "40px", border: "2px dashed #e2e8f0",
+              borderRadius: "14px", textAlign: "center", color: "#9ca3af"
+            }}>
+              <p style={{ fontSize: "14px" }}>No episodes added yet. Click "+ Add Episode" to start building your curriculum.</p>
+            </div>
+          )}
+        </div>
+
+        {/* ── Submit ── */}
+        <div style={{ marginTop: "40px", display: "flex", justifyContent: "flex-end" }}>
+          <button
+            type="submit" disabled={!token}
+            style={btnBlack}
+            onMouseEnter={e => e.target.style.background = "#374151"}
+            onMouseLeave={e => e.target.style.background = "#0f0f0f"}
+          >
+            {isEditing ? "Save Changes" : "Create Course"}
+          </button>
+        </div>
+
+      </form>
+    </div>
   );
 }
