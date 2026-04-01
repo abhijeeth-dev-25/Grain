@@ -40,9 +40,8 @@ export default function CourseCard({ course }) {
       className="bg-white shadow-lg rounded-xl overflow-hidden w-64 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative"
       onClick={() => navigate(`/course/${course._id}`)}
     >
-      {/* Course image */}
       <img
-        src={course.imageUrl}
+        src={course.imageUrl || undefined}
         alt={course.title}
         className="h-40 w-full object-cover"
       />

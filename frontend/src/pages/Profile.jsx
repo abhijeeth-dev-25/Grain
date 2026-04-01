@@ -11,7 +11,7 @@ const navLink = {
 };
 
 export default function Profile() {
-  const { token, user, logout } = useAuth();
+  const { token, user, logout, logoutAll } = useAuth();
   const [profile, setProfile] = useState(null);
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,6 +32,7 @@ export default function Profile() {
   }, [token]);
 
   const handleLogout = () => { logout(); navigate("/"); };
+  const handleLogoutAll = () => { logoutAll(); navigate("/"); };
 
   const initials = (profile?.username || user?.username || "?")
     .slice(0, 2).toUpperCase();
@@ -125,7 +126,7 @@ export default function Profile() {
           <div style={{ borderTop: "1px solid #f1f5f9" }} />
 
           {/* Logout */}
-          <div style={{ padding: "14px 16px" }}>
+          <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: "10px" }}>
             <button
               onClick={handleLogout}
               style={{
@@ -138,6 +139,20 @@ export default function Profile() {
               onMouseLeave={e => e.target.style.background = "#0f0f0f"}
             >
               Logout
+            </button>
+            <button
+              onClick={handleLogoutAll}
+              style={{
+                width: "100%", padding: "10px",
+                background: "transparent", color: "#dc2626",
+                border: "1px solid #fecaca", borderRadius: "10px",
+                fontWeight: "700", fontSize: "13px", cursor: "pointer",
+                transition: "background 0.2s"
+              }}
+              onMouseEnter={e => e.target.style.background = "#fef2f2"}
+              onMouseLeave={e => e.target.style.background = "transparent"}
+            >
+              Logout All Devices
             </button>
           </div>
         </div>
@@ -231,7 +246,7 @@ export default function Profile() {
                         }}
                       >
                         <img
-                          src={course.imageUrl}
+                          src={course.imageUrl || undefined}
                           alt={course.title}
                           style={{ width: "100%", height: "120px", objectFit: "cover" }}
                         />

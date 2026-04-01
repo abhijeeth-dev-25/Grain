@@ -19,6 +19,12 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["user", "admin"], default: "user" },
+  /**
+   * tokenVersion is incremented every time the user logs out from all devices.
+   * All access tokens carry the version at issuance time.
+   * The middleware rejects any token whose version doesn't match the current value.
+   */
+  tokenVersion: { type: Number, default: 0 },
   wishlist: [
     {
       courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" }

@@ -1,35 +1,29 @@
-/**
- * @fileoverview Authentication middleware for securing routes
- * Provides functions to verify JWTs and check user roles.
- */
-
 const jwt = require("jsonwebtoken");
 const Blocklist = require("../models/blocklist.model");
+const User = require("../models/user.model");
 
-/**
- * Middleware to protect routes that require authentication
- * Verifies the JWT token from the Authorization header and attaches the decoded user to the request.
- * @function protect
- * @param {Object} req - Express request object
- * @param {Object} req.headers - Request headers
- * @param {string} [req.headers.authorization] - Bearer token for authentication
- * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
- * @returns {void} Calls next() on success, or sends a 401 response on failure
- */
 exports.protect = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ message: "No token provided" });
 
   try {
-    // 1. Check if token is in the blocklist
+    // 1. Check blocklist
     const isBlocklisted = await Blocklist.findOne({ token });
     if (isBlocklisted) {
       return res.status(401).json({ message: "Token invalidated" });
     }
 
-    // 2. Verify token
+    // 2. Verify signature and expiry
     const decoded = jwt.verify(token, "SECRET_KEY");
+
+    // 3. Check tokenVersion — this rejects tokens issued before a "logout all"
+    const user = await User.findById(decoded.id).select("tokenVersion role");
+    if (!user) return res.status(401).json({ message: "User not found" });
+
+    if ((decoded.tokenVersion ?? 0) !== user.tokenVersion) {
+      return res.status(401).json({ message: "Session expired. Please log in again." });
+    }
+
     req.user = decoded;
     next();
   } catch {

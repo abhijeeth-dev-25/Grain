@@ -3,11 +3,14 @@ import { useAuth } from "../context/AuthContext";
 
 /**
  * ProtectedRoute — wraps routes that require auth or a specific role.
- * @param {string} role - optional: "admin" or "user" to restrict by role
- * If no role specified, any logged-in user can access.
+ * Waits for auth state to be initialized before deciding to redirect,
+ * preventing a flash of content or incorrect redirects on first load.
  */
 export default function ProtectedRoute({ children, role }) {
-  const { token, user } = useAuth();
+  const { token, user, initialized } = useAuth();
+
+  // Auth state is still being resolved from localStorage — render nothing
+  if (!initialized) return null;
 
   // Not logged in → go to login
   if (!token) return <Navigate to="/login" replace />;
@@ -17,3 +20,4 @@ export default function ProtectedRoute({ children, role }) {
 
   return children;
 }
+

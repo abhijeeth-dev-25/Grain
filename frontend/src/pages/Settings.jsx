@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Settings() {
-  const { token, user } = useAuth();
+  const { token, user, logout, logoutAll } = useAuth();
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -141,6 +141,30 @@ export default function Settings() {
             ))}
           </div>
         )}
+
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Account Security</h2>
+          <div className="flex gap-4">
+            <button
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
+              className="px-5 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition font-medium"
+            >
+              Sign Out
+            </button>
+            <button
+              onClick={() => {
+                logoutAll();
+                navigate("/");
+              }}
+              className="px-5 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition font-medium"
+            >
+              Sign Out from All Devices
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

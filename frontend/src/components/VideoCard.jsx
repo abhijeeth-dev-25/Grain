@@ -33,7 +33,7 @@ const VideoCard = ({ episode, course }) => {
       {/* Video Player Header */}
       <div style={{ padding: "24px 32px", borderBottom: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: "20px" }}>
         <img
-          src={courseImage} alt={courseTitle}
+          src={courseImage || undefined} alt={courseTitle}
           style={{ width: "64px", height: "64px", objectFit: "cover", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
         />
         <div>
@@ -50,7 +50,7 @@ const VideoCard = ({ episode, course }) => {
       <div style={{ width: "100%", background: "#0f0f0f", position: "relative", paddingTop: "56.25%" /* 16:9 Aspect Ratio */ }}>
         {episode.videoUrl ? (
           <iframe
-            src={getEmbedUrl(episode.videoUrl)}
+            src={getEmbedUrl(episode.videoUrl) || undefined}
             title={episode.title}
             style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
