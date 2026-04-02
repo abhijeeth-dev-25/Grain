@@ -1,130 +1,118 @@
-# Grain - Educational Resources and Course Marketplace
+# ![Grain Hero Banner](assets/banner.png)
 
-Grain is a premium, full-stack educational platform and course marketplace. It features a sleek, modern UI with a robust Role-Based Access Control (RBAC) system, allowing users to discover courses, manage wishlists, and empowering admins to create and manage the platform's curriculum.
+# Grain — Premium Educational Marketplace
 
-## ✨ Platform Highlights
-
-### 🎨 Premium User Interface
-- **Dynamic Hero Section:** A highly responsive, role-aware landing page that adapts to Anonymous Users, Students, and Admins.
-- **Modern Dashboard Layouts:** Clean, responsive profile and course viewing pages built with Tailwind CSS, featuring soft shadows, glassmorphic elements, and polished focus states.
-- **Curriculum Builder:** An intuitive, card-based course creation and editing interface for Administrators.
-- **Smart Components:** Interactive wishlist buttons, sticky sidebars, and z-index optimized search dropdowns.
-
-### 🔒 Highly Secure Authentication (JWT + Blocklisting)
-Grain implements an advanced, hardened authentication system to ensure maximum data security:
-- **1-Day Token Expiry:** JWT tokens strictly expire after 24 hours, minimizing the attack window for stolen tokens.
-- **MongoDB Token Blocklist:** Upon user logout, the active token is immediately extracted, decoded, and pushed to a dedicated `Blocklist` collection in the database.
-- **Automated TTL Cleanup:** The MongoDB Blocklist schema utilizes a native **Time-To-Live (TTL) index** (`expires: 0`). This tells the database to automatically delete the blocklisted token precisely when its original encoded `exp` timestamp is reached, keeping the database perfectly clean without cron jobs.
-- **Pre-Flight Middleware:** Every secured API request runs through a `protect` middleware that intercepts the request, checks the `Blocklist` database first, and immediately rejects it (`401 Unauthorized`) if the token was previously logged out or invalidated.
-
-### 🛡️ Role-Based Access Control (RBAC)
-- **Anonymous:** Can browse the marketplace, search courses, and view course details.
-- **Student / User:** Can manage their personal profile and add/remove courses from their Wishlist.
-- **Administrator:** Dashboard access to Create, Update, and Delete courses, alongside full user privileges.
-- **Protected Routing:** Strict frontend and backend route guarding to prevent unauthorized role escalation.
+**Grain** is a state-of-the-art, full-stack educational ecosystem designed for the modern learner and educator. Built with a "Security-First, UI-Second" philosophy, Grain combines a high-end, tactile bistro-inspired aesthetic with enterprise-grade authentication and real-time interactive features.
 
 ---
 
-## 🛠️ Tech Stack
+## 🌟 Platform Highlights
 
-### Frontend
-- **Framework:** React 19 with Vite ⚡
-- **Styling:** Tailwind CSS 4 (Custom Premium Aesthetic)
-- **Routing:** React Router v7
-- **State Management:** React Context API (`AuthContext`)
-- **Icons:** Lucide React
+### 🎨 Elite User Experience
+- **Responsive Role-Adaptive UI:** A seamless experience that transforms dynamically based on whether you are an Anonymous guest, a Student, or an Administrator.
+- **Micro-Animations & Glassmorphism:** Subtle, smooth transitions and frosted-glass components provide a premium, modern feel.
+- **Tactile Course Management:** An intuitive, card-based curriculum builder for admins and a streamlined checkout/wishlist flow for students.
 
-### Backend
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Database:** MongoDB with Mongoose
-- **Authentication:** JWT (JSON Web Tokens) + bcryptjs
-- **Security:** MongoDB TTL Blocklisting & Custom RBAC Authorization Middleware
+### 🔒 Advanced "Ironclad" Security
+Grain implements a hardware-resilient authentication architecture to protect user data and sessions:
+- **Dual-Token System:** Utilizes **15-minute Access Tokens** (JWT) and **7-day Refresh Tokens** (Crypto-random) for the perfect balance of security and convenience.
+- **Stateful Token Rotation:** Refresh tokens are "rotated" (swapped) upon every use, instantly invalidating the old token and preventing common replay attacks.
+- **Mongoose TTL Garbage Collection:** Automatic, database-level cleanup of expired blocklisted tokens and refresh tokens using native MongoDB TTL indexes—keeping the database lean and performant.
+- **Remote "Logout All" & Versioning:** Admins and users can invalidate *all* active sessions across all devices instantly by incrementing a `tokenVersion` on the user model.
+
+### ⚡ Innovative Features
+- **Real-time AI Search:** A high-speed, debounced search box that fetches course results as you type, providing instant feedback.
+- **Smart Heartbeat Mechanism:** A background "heartbeat" service that silently verifies session integrity, detecting remote logouts and presenting a custom animated security overlay.
+- **JSDoc Self-Documentation:** The backend is fully documented using JSDoc, ensuring high maintainability and developer-friendly onboarding.
 
 ---
 
-## 📁 Project Structure
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React 19, Vite, Tailwind CSS 4, React Router v7, Lucide Icons |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB, Mongoose (TTL Indexes, Soft Deletes) |
+| **Auth** | JWT, bcryptjs, Crypto-Rotation, Axios Interceptors |
+| **Deployment** | Vercel (Frontend), Railway/Render/Local (Backend) |
+
+---
+
+## 📁 Project Architecture
 
 ```text
 Grain/
-├── backend/            # Express.js API server
+├── backend/                # Enterprise Express.js API
 │   ├── src/
-│   │   ├── controllers/# Logic for handling requests
-│   │   ├── middleware/ # Auth (Blocklist check) and RBAC middlewares
-│   │   ├── models/     # Mongoose schemas (User, Course, Blocklist)
-│   │   ├── routes/     # API endpoints (auth, course, profile, wishlist)
-│   │   └── server.js   # Entry point
+│   │   ├── controllers/    # Business logic with JSDoc
+│   │   ├── middleware/     # Auth, RBAC, and Validation
+│   │   ├── models/         # Mongoose Schemas (User, Course, RefreshToken, Blocklist)
+│   │   ├── routes/         # RESTful API endpoints
+│   │   └── server.js       # Entry point
 │   └── package.json
-└── frontend/           # React frontend application
-    ├── src/
-    │   ├── components/ # Reusable UI components (Navbar, CourseCard, etc)
-    │   ├── context/    # React context (AuthContext featuring Blocklist API hooks)
-    │   ├── pages/      # Route pages (Home, Profile, AddCourse, CoursePage)
-    │   ├── App.jsx     # Main application routing & ProtectedRoutes setup
-    │   └── main.jsx    # React DOM render
-    └── package.json
+├── frontend/               # Modern React Application
+│   ├── src/
+│   │   ├── components/     # Atomic UI elements (SearchBox, Navbar, etc.)
+│   │   ├── context/        # AuthContext with sophisticated Axios Interceptors
+│   │   ├── pages/          # Full-page route components
+│   │   ├── App.jsx         # Routing & Protected Route setup
+│   │   └── index.css       # Design system & Tailwind 4 config
+│   └── package.json
+└── assets/                 # Brand assets & documentation media
 ```
 
 ---
 
-## 🔌 API Endpoints (Brief Overview)
+## 🔌 API Ecosystem
 
-### Authentication
-- `POST /api/auth/signup` - Register a new user (optional `role` field).
-- `POST /api/auth/login` - Authenticate user, verify bcrypt, and receive 1-day JWT.
-- `POST /api/auth/logout` - **[Protected]** Invalidate and blocklist the current active JWT token.
+### 🔑 Authentication & Identity
+- `POST /api/auth/signup` - Register with role selection.
+- `POST /api/auth/login` - Receive initial Access & Refresh tokens.
+- `POST /api/auth/refresh` - Swap an old refresh token for a new pair (Rotation).
+- `POST /api/auth/logout` - [Protected] Invalidate current session and blocklist token.
+- `POST /api/auth/logout-all` - [Protected] Invalidate sessions on all devices.
+- `GET /api/auth/verify` - [Protected] Heartbeat endpoint for session validation.
 
-### Courses
-- `GET /api/courses` - List all courses.
-- `GET /api/courses/:id` - Get specific course details.
-- `POST /api/courses/add` - **[Admin Only]** Create a new course.
-- `PUT /api/courses/:id` - **[Admin Only]** Update an existing course.
-- `DELETE /api/courses/:id` - **[Admin Only]** Remove a course.
+### 📚 Course Management
+- `GET /api/courses` - List all active courses.
+- `GET /api/courses/search` - Real-time title/category search.
+- `POST /api/courses/add` - [Admin] Create a new course curriculum.
+- `PUT /api/courses/:id` - [Admin] Update existing course details.
+- `DELETE /api/courses/:id` - [Admin] Remove a course from the platform.
 
-### User & Wishlist
-- `GET /api/profile` - **[Protected]** Get user details.
-- `GET /api/wishlist` - **[Protected]** Retrieve user's wishlisted items.
-- `POST /api/wishlist/toggle` - **[Protected]** Add/remove a course from the wishlist.
+### 👤 Profile & Social
+- `GET /api/profile` - [Protected] Get personal dashboard data.
+- `POST /api/wishlist/toggle` - [Protected] Manage saved courses.
 
 ---
 
-## ⚙️ Local Setup and Execution
+## 🚀 Execution & Deployment
 
-### Prerequisites
-- Node.js (v18+ recommended)
-- MongoDB instance (local or MongoDB Atlas)
-
-### 1. Backend Setup
-1. Navigate to the backend directory:
+### Local Development
+1. **Clone & Install:**
    ```bash
-   cd backend
+   npm install && cd backend && npm install && cd ../frontend && npm install
    ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Set up environment variables:
-   Create a `.env` file in the `backend/` root directory and add:
+2. **Environment Configuration:**
+   Create a `.env` in `backend/`:
    ```env
-   MONGO_URI=mongodb://localhost:27017/eduapp
-   # SECRET_KEY=your_secret_key (Optional if using the default "SECRET_KEY")
+   MONGO_URI=your_mongodb_connection_string
+   JWT_SECRET=your_ultra_secure_secret
    ```
-4. Start the server (Dev mode uses Nodemon):
-   ```bash
-   npx nodemon src/server.js
-   ```
+3. **Run Platform:**
+   - Backend: `npm run dev` (from /backend)
+   - Frontend: `npm run dev` (from /frontend)
 
-### 2. Frontend Setup
-1. Open a new terminal and navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-   *The application will be accessible at `http://localhost:5173`.*
+### Vercel Deployment
+To deploy the frontend to Vercel, ensure you set the following Environment Variables in the Vercel Dashboard:
+- `VITE_API_URL`: The URL of your deployed backend API.
+- `VITE_APP_NAME`: `Grain`
+
+---
+
+## 📄 License
+Grain is licensed under the MIT License. See `LICENSE` for more details.
+
+---
+*Built with ❤️ by the Grain Development Team.*
