@@ -1,14 +1,82 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { GraduationCap, Book, Pencil, Sparkles, LogIn, Mail, Lock } from "lucide-react";
+import { gsap } from "gsap";
 
+/**
+ * Premium Login Page for 'Grain - An Educational Ecosystem'
+ * Features: GSAP Animations, Glassmorphism, Cross-Platform Responsive Layout
+ */
 export default function Login() {
   const { login } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  // GSAP Refs
+  const containerRef = useRef(null);
+  const cardRef = useRef(null);
+  const leftPanelRef = useRef(null);
+  const motifsRef = useRef([]);
+
+  useEffect(() => {
+    // ── Entrance Animations ───────────────────────────────────────────────────
+    const ctx = gsap.context(() => {
+      // 1. Fade-in and slide-up the card
+      gsap.from(cardRef.current, {
+        y: 40,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out",
+        delay: 0.3
+      });
+
+      // 2. Identity elements staggered fade-in
+      gsap.from(".identity-element", {
+        opacity: 0,
+        x: -20,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power2.out",
+        delay: 0.1
+      });
+
+      // 3. Create wandering idle floating for motifs
+      motifsRef.current.forEach((el, index) => {
+        if (!el) return;
+        gsap.to(el, {
+          y: "random(-20, 20)",
+          x: "random(-15, 15)",
+          rotation: "random(-10, 10)",
+          duration: "random(3, 5)",
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: index * 0.5
+        });
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // Parallax Background Motifs effect
+  const handleMouseMove = (e) => {
+    const { clientX, clientY } = e;
+    const xPos = (clientX - window.innerWidth / 2) / 30;
+    const yPos = (clientY - window.innerHeight / 2) / 30;
+
+    gsap.to(".parallax-motif", {
+      x: xPos,
+      y: yPos,
+      duration: 1,
+      ease: "power1.out",
+      stagger: 0.05
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,247 +87,170 @@ export default function Login() {
       login(res.data);
       navigate("/");
     } catch (err) {
-      setError("Invalid email or password. Please try again.");
+      setError("Credentials invalid. Please verify and try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
-      {/* Left Panel */}
-      <div
-        style={{
-          flex: "1",
-          background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%)",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "60px 50px",
-          color: "white",
-          position: "relative",
-          overflow: "hidden",
-        }}
+    <div 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="flex min-h-screen bg-gray-50/10 overflow-hidden font-sans select-none"
+    >
+      {/* ── Left Side: Modern Grain Identity Panel (Desktop-Only Focus) ──────────────── */}
+      <div 
+        ref={leftPanelRef}
+        className="hidden lg:flex flex-[1.6] bg-gradient-to-br from-[#120021] via-[#21004a] to-[#2e0052] flex-col p-16 relative overflow-hidden items-start justify-center"
       >
-        {/* Background glow blobs */}
-        <div
-          style={{
-            position: "absolute",
-            top: "-80px",
-            left: "-80px",
-            width: "320px",
-            height: "320px",
-            borderRadius: "50%",
-            background: "rgba(99, 102, 241, 0.15)",
-            filter: "blur(60px)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            bottom: "-60px",
-            right: "-60px",
-            width: "280px",
-            height: "280px",
-            borderRadius: "50%",
-            background: "rgba(139, 92, 246, 0.12)",
-            filter: "blur(60px)",
-          }}
-        />
-
-        <div style={{ position: "relative", zIndex: 1, textAlign: "center", maxWidth: "340px" }}>
-          {/* Logo */}
-          <div
-            style={{
-              width: "56px",
-              height: "56px",
-              background: "white",
-              borderRadius: "16px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 32px",
-              boxShadow: "0 8px 32px rgba(255,255,255,0.1)",
-            }}
-          >
-            <span style={{ fontSize: "26px" }}>🎓</span>
-          </div>
-          <h1
-            style={{
-              fontSize: "36px",
-              fontWeight: "800",
-              letterSpacing: "-1px",
-              marginBottom: "16px",
-              lineHeight: 1.1,
-            }}
-          >
-            Learn without
-            <br />
-            <span
+        {/* Animated Background Motifs (Lucide Icons) */}
+        <div className="absolute inset-0 z-0">
+          {[GraduationCap, Book, Pencil, Sparkles].map((Icon, idx) => (
+            <div 
+              key={idx}
+              ref={el => motifsRef.current[idx] = el}
+              className="parallax-motif absolute text-white/5 opacity-10 filter blur-[1px]"
               style={{
-                background: "linear-gradient(90deg, #a78bfa, #818cf8)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
+                top: `${20 + idx * 25}%`,
+                left: `${15 + idx * 25}%`,
+                transform: `scale(${1.5 + idx * 0.5})`
               }}
             >
-              limits.
-            </span>
+              <Icon size={180} />
+            </div>
+          ))}
+          <div className="absolute -top-20 -left-20 w-96 h-96 rounded-full bg-blue-500/10 blur-3xl" />
+          <div className="absolute -bottom-20 -right-20 w-[480px] h-[480px] rounded-full bg-violet-600/10 blur-[100px]" />
+        </div>
+
+        <div className="relative z-10 space-y-6 max-w-lg">
+          <div className="identity-element flex items-center gap-4 mb-4">
+            <div className="w-14 h-14 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-xl">
+              <span className="text-3xl">🌿</span>
+            </div>
+            <span className="text-3xl font-bold text-white tracking-widest uppercase opacity-80">Grain</span>
+          </div>
+          
+          <h1 className="identity-element text-6xl font-extrabold text-white leading-tight">
+            Elevate Your <br />
+            <span className="bg-gradient-to-r from-violet-300 to-indigo-300 bg-clip-text text-transparent">Wisdom Journey.</span>
           </h1>
-          <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "15px", lineHeight: 1.6 }}>
-            Access thousands of courses crafted by world-class instructors. Your next skill is one login away.
+          
+          <p className="identity-element text-lg text-white/60 leading-relaxed max-w-sm">
+            Unlock thousands of premium courses curated by world-class industry leaders. Your next transformation is just a login away.
           </p>
-
-
+          
+          {/* Subtle Stats or Taglines could go here */}
         </div>
       </div>
 
-      {/* Right Panel - Form */}
-      <div
-        style={{
-          flex: "1",
-          backgroundColor: "#fafafa",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "40px 32px",
-        }}
-      >
-        <div style={{ width: "100%", maxWidth: "400px" }}>
-          <h2
-            style={{
-              fontSize: "28px",
-              fontWeight: "800",
-              color: "#0f0f0f",
-              marginBottom: "6px",
-              letterSpacing: "-0.5px",
-            }}
-          >
-            Welcome back
-          </h2>
-          <p style={{ color: "#6b7280", fontSize: "14px", marginBottom: "36px" }}>
-            Sign in to continue your learning journey
-          </p>
+      {/* ── Right Side: Ethereal Login Form ──────────────── */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white lg:bg-[#f8f9fa] relative">
+        {/* Mobile-Only Header Branding */}
+        <div className="lg:hidden absolute top-8 text-center space-y-2">
+            <div className="mx-auto w-10 h-10 bg-[var(--primary)] rounded-lg flex items-center justify-center shadow-md">
+              <span className="text-xl">🌿</span>
+            </div>
+            <h2 className="text-xl font-bold tracking-widest uppercase opacity-40">Grain</h2>
+        </div>
+
+        <div ref={cardRef} className="w-full max-w-sm glass-card p-10 rounded-3xl lg:bg-white lg:border-none lg:shadow-2xl">
+          <div className="space-y-6 mb-10 text-center lg:text-left">
+            <h2 className="text-3xl font-extrabold text-[var(--on-surface)] leading-tight tracking-tight">
+              Welcome Back
+            </h2>
+            <p className="text-sm text-gray-500 font-medium">
+              Continue your educational odyssey with Grain.
+            </p>
+          </div>
 
           {error && (
-            <div
-              style={{
-                backgroundColor: "#fef2f2",
-                border: "1px solid #fecaca",
-                color: "#dc2626",
-                padding: "12px 16px",
-                borderRadius: "10px",
-                fontSize: "13px",
-                marginBottom: "20px",
-              }}
-            >
+            <div className="mb-6 p-4 bg-red-50/50 border-l-4 border-red-400 text-red-600 text-xs font-semibold rounded-r-lg animate-pulse">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            {/* Email */}
-            <div style={{ marginBottom: "16px" }}>
-              <label
-                style={{
-                  display: "block",
-                  fontSize: "13px",
-                  fontWeight: "600",
-                  color: "#374151",
-                  marginBottom: "6px",
-                }}
-              >
-                Email address
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1.5 group">
+              <label className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-gray-400 group-focus-within:text-[var(--primary)] transition-colors">
+                <Mail size={12} />
+                Email Address
               </label>
               <input
                 type="email"
-                placeholder="you@example.com"
+                placeholder="you@university.edu"
                 required
+                className="input-ethereal"
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  border: "1.5px solid #e5e7eb",
-                  borderRadius: "10px",
-                  fontSize: "14px",
-                  backgroundColor: "white",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "#0f0f0f")}
-                onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
               />
             </div>
 
-            {/* Password */}
-            <div style={{ marginBottom: "28px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                <label style={{ fontSize: "13px", fontWeight: "600", color: "#374151" }}>
+            <div className="space-y-1.5 group">
+              <div className="flex justify-between items-center pr-1">
+                <label className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-gray-400 group-focus-within:text-[var(--primary)] transition-colors">
+                  <Lock size={12} />
                   Password
                 </label>
-                <a href="#" style={{ fontSize: "12px", color: "#6b7280", textDecoration: "none" }}>
-                  Forgot password?
-                </a>
+                <Link to="#" className="text-[11px] font-bold text-gray-400 hover:text-[var(--primary)] transition-colors underline-offset-4 decoration-2">
+                  Forgot?
+                </Link>
               </div>
               <input
                 type="password"
                 placeholder="••••••••"
                 required
+                className="input-ethereal"
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  border: "1.5px solid #e5e7eb",
-                  borderRadius: "10px",
-                  fontSize: "14px",
-                  backgroundColor: "white",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "#0f0f0f")}
-                onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
               />
             </div>
 
-            {/* Login Button */}
             <button
               type="submit"
               disabled={loading}
-              style={{
-                width: "100%",
-                padding: "14px",
-                backgroundColor: loading ? "#374151" : "#0f0f0f",
-                color: "white",
-                border: "none",
-                borderRadius: "10px",
-                fontSize: "15px",
-                fontWeight: "700",
-                cursor: loading ? "not-allowed" : "pointer",
-                transition: "background-color 0.2s, transform 0.1s",
-                letterSpacing: "0.3px",
-              }}
-              onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = "#1f2937")}
-              onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = "#0f0f0f")}
-              onMouseDown={(e) => (e.target.style.transform = "scale(0.99)")}
-              onMouseUp={(e) => (e.target.style.transform = "scale(1)")}
+              className="btn-primary w-full flex items-center justify-center gap-2 mt-8 shadow-[0_10px_30px_rgba(75,0,130,0.15)]"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <LogIn size={18} />
+                  Access Dashboard
+                </>
+              )}
             </button>
           </form>
 
-          <p style={{ textAlign: "center", marginTop: "24px", fontSize: "14px", color: "#6b7280" }}>
-            Don't have an account?{" "}
+          <p className="mt-10 text-center text-xs text-gray-400 font-bold tracking-tight">
+            First time in the academy? {" "}
             <Link
               to="/signup"
-              style={{ color: "#0f0f0f", fontWeight: "700", textDecoration: "none" }}
+              className="text-[var(--primary-container)] hover:underline hover:scale-110 active:scale-95 inline-block transition-all underline-offset-4 decoration-2"
             >
-              Sign up
+              Create Master Account
             </Link>
           </p>
         </div>
+        
+        {/* Subtle Footer */}
+        <div className="mt-12 text-[10px] uppercase tracking-widest font-black text-gray-300">
+           © 2026 Grain Academic Labs — Privacy Protected
+        </div>
       </div>
+
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&family=Outfit:wght@500;600;700&display=swap');
+        
+        * {
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Smoothing GSAP-targeted elements */
+        .identity-element, .parallax-motif, .glass-card {
+          backface-visibility: hidden;
+          -webkit-font-smoothing: antialiased;
+        }
+      `}</style>
     </div>
   );
 }

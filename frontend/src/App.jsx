@@ -18,24 +18,26 @@ function Layout() {
   const showNavbar = !hideNavbarRoutes.includes(location.pathname);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {showNavbar && <Navbar />}
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/course/:id" element={<CoursePage />} />
+      <main className="flex-grow">
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/course/:id" element={<CoursePage />} />
 
-        {/* Any logged-in user */}
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          {/* Any logged-in user */}
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
-        {/* Admin only */}
-        <Route path="/add-course" element={<ProtectedRoute role="admin"><AddCourse /></ProtectedRoute>} />
-        <Route path="/edit-course/:id" element={<ProtectedRoute role="admin"><EditCourse /></ProtectedRoute>} />
-      </Routes>
-    </>
+          {/* Admin only */}
+          <Route path="/add-course" element={<ProtectedRoute role="admin"><AddCourse /></ProtectedRoute>} />
+          <Route path="/edit-course/:id" element={<ProtectedRoute role="admin"><EditCourse /></ProtectedRoute>} />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
