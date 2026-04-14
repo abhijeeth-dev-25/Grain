@@ -96,35 +96,52 @@ export default function Home() {
       });
 
       // ── Courses Section: ScrollTrigger stagger ──────────────────────────────
-      gsap.from(".course-card-anim", {
-        y: 40,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: coursesSectionRef.current,
-          start: "top 80%",
-          toggleActions: "play none none none",
-        },
-      });
+      // course-card-anim moved to a separate useEffect
 
-      gsap.from(".section-title-anim", {
-        y: 25,
-        opacity: 0,
-        duration: 0.7,
+      gsap.fromTo(".section-title-anim", 
+        { y: 25, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
         ease: "power3.out",
         scrollTrigger: {
           trigger: coursesSectionRef.current,
           start: "top 85%",
           toggleActions: "play none none none",
         },
-      });
+      
+        }
+      );
 
     }, heroRef);
 
     return () => ctx.revert();
   }, []);
+
+  useEffect(() => {
+    if (courses.length === 0) return;
+    
+    const ctx = gsap.context(() => {
+      gsap.fromTo(".course-card-anim", 
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: coursesSectionRef.current,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    }, coursesSectionRef);
+
+    return () => ctx.revert();
+  }, [courses]);
 
   const isAdmin = user?.role === "admin";
 
