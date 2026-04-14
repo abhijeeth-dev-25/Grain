@@ -96,9 +96,18 @@ export default function Profile() {
                   background: isAdmin ? "#fef3c7" : "#ede9fe",
                   color: isAdmin ? "#92400e" : "#5b21b6",
                   textTransform: "uppercase", letterSpacing: "0.5px",
+                  marginBottom: "16px"
                 }}>
                   {isAdmin ? "Admin" : "Student"}
                 </span>
+
+                <Link to="/settings" style={{
+                  display: "block",
+                  fontSize: "12px", fontWeight: "700", color: "#6366f1",
+                  textDecoration: "none"
+                }}>
+                  ✏️ Edit Profile
+                </Link>
               </>
             ) : (
               <p style={{ color: "#6b7280", fontSize: "14px" }}>Please log in</p>

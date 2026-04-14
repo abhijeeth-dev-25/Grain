@@ -5,7 +5,7 @@
 
 const router = require("express").Router();
 const { protect } = require("../middleware/auth.middleware");
-const { getProfile } = require("../controllers/profile.controller");
+const { getProfile, updateProfile } = require("../controllers/profile.controller");
 
 /**
  * @route GET /
@@ -13,5 +13,12 @@ const { getProfile } = require("../controllers/profile.controller");
  * @access Private
  */
 router.get("/", protect, getProfile);
+
+/**
+ * @route PUT /
+ * @description Update the currently authenticated user's profile
+ * @access Private
+ */
+router.put("/", protect, updateProfile);
 
 module.exports = router;

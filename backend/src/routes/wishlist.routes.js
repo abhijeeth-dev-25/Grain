@@ -5,7 +5,7 @@
 
 const router = require("express").Router();
 const { protect } = require("../middleware/auth.middleware");
-const { addToWishlist, getWishlist } = require("../controllers/wishlist.controller");
+const { addToWishlist, getWishlist, removeFromWishlist } = require("../controllers/wishlist.controller");
 
 /**
  * @route POST /add
@@ -20,5 +20,12 @@ router.post("/add", protect, addToWishlist);
  * @access Private
  */
 router.get("/", protect, getWishlist);
+
+/**
+ * @route DELETE /:courseId
+ * @description Remove a specific course from the active user's wishlist
+ * @access Private
+ */
+router.delete("/:courseId", protect, removeFromWishlist);
 
 module.exports = router;

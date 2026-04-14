@@ -49,3 +49,27 @@ exports.getWishlist = async (req, res) => {
     res.status(500).json({ message: "Error fetching wishlist" });
   }
 };
+
+/**
+ * Removes a specific course from the authenticated user's wishlist
+ * @function removeFromWishlist
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request URL parameters
+ * @param {string} req.params.courseId - The ID of the course to be removed
+ * @param {Object} req.user - Authenticated user details from middleware
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Responds with a success message or an error message
+ */
+exports.removeFromWishlist = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const user = await User.findById(req.user.id);
+
+    user.wishlist = user.wishlist.filter(w => w.courseId.toString() !== courseId);
+    await user.save();
+
+    res.json({ message: "Course removed from wishlist" });
+  } catch (err) {
+    res.status(500).json({ message: "Error removing from wishlist", error: err.message });
+  }
+};
