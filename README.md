@@ -10,20 +10,20 @@
 
 ### 🎨 Elite User Experience
 - **Responsive Role-Adaptive UI:** A seamless experience that transforms dynamically based on whether you are an Anonymous guest, a Student, or an Administrator.
-- **Micro-Animations & Glassmorphism:** Subtle, smooth transitions and frosted-glass components provide a premium, modern feel.
+- **Micro-Animations & Glassmorphism:** Subtle, smooth transitions and frosted-glass components provide a premium, modern feel using GSAP.
+- **Comprehensive Settings Dashboard:** A unified account management center for profile updates (Username/Email) and managing course wishlists.
 - **Tactile Course Management:** An intuitive, card-based curriculum builder for admins and a streamlined checkout/wishlist flow for students.
 
 ### 🔒 Advanced "Ironclad" Security
-Grain implements a hardware-resilient authentication architecture to protect user data and sessions:
 - **Dual-Token System:** Utilizes **15-minute Access Tokens** (JWT) and **7-day Refresh Tokens** (Crypto-random) for the perfect balance of security and convenience.
-- **Stateful Token Rotation:** Refresh tokens are "rotated" (swapped) upon every use, instantly invalidating the old token and preventing common replay attacks.
-- **Mongoose TTL Garbage Collection:** Automatic, database-level cleanup of expired blocklisted tokens and refresh tokens using native MongoDB TTL indexes—keeping the database lean and performant.
-- **Remote "Logout All" & Versioning:** Admins and users can invalidate *all* active sessions across all devices instantly by incrementing a `tokenVersion` on the user model.
+- **Laboratory Access Control:** Integrated content gating ensuring video playback is exclusive to registered members, with premium "Locked" UI for guests.
+- **Stateful Token Rotation:** Refresh tokens are rotated upon use, preventing replay attacks.
+- **Remote Logout All:** Instantly invalidate all active sessions across devices using `tokenVersion` logic.
 
 ### ⚡ Innovative Features
-- **Real-time AI Search:** A high-speed, debounced search box that fetches course results as you type, providing instant feedback.
-- **Smart Heartbeat Mechanism:** A background "heartbeat" service that silently verifies session integrity, detecting remote logouts and presenting a custom animated security overlay.
-- **JSDoc Self-Documentation:** The backend is fully documented using JSDoc, ensuring high maintainability and developer-friendly onboarding.
+- **Advanced "Proper" Search:** A high-speed, debounced search box searching through both **titles and descriptions**. Features full keyboard navigation (Arrows + Enter) and course thumbnails.
+- **Smart Heartbeat Mechanism:** Silently verifies session integrity, detecting remote logouts and presenting a custom animated security overlay.
+- **Modular Backend Architecture:** Organized with a dedicated configuration layer for database management and JSDoc self-documentation.
 
 ---
 
@@ -31,7 +31,7 @@ Grain implements a hardware-resilient authentication architecture to protect use
 
 | Layer | Technologies |
 | :--- | :--- |
-| **Frontend** | React 19, Vite, Tailwind CSS 4, React Router v7, Lucide Icons |
+| **Frontend** | React 19, Vite, Tailwind CSS 4, React Router v7, Lucide Icons, GSAP |
 | **Backend** | Node.js, Express.js |
 | **Database** | MongoDB, Mongoose (TTL Indexes, Soft Deletes) |
 | **Auth** | JWT, bcryptjs, Crypto-Rotation, Axios Interceptors |
@@ -45,7 +45,8 @@ Grain implements a hardware-resilient authentication architecture to protect use
 Grain/
 ├── backend/                # Enterprise Express.js API
 │   ├── src/
-│   │   ├── controllers/    # Business logic with JSDoc
+│   │   ├── config/         # Modular configuration (DB connections, etc.)
+│   │   ├── controllers/    # Business logic (documented with JSDoc)
 │   │   ├── middleware/     # Auth, RBAC, and Validation
 │   │   ├── models/         # Mongoose Schemas (User, Course, RefreshToken, Blocklist)
 │   │   ├── routes/         # RESTful API endpoints
@@ -54,8 +55,8 @@ Grain/
 ├── frontend/               # Modern React Application
 │   ├── src/
 │   │   ├── components/     # Atomic UI elements (SearchBox, Navbar, etc.)
-│   │   ├── context/        # AuthContext with sophisticated Axios Interceptors
-│   │   ├── pages/          # Full-page route components
+│   │   ├── context/        # AuthContext with complex Axios Interceptors
+│   │   ├── pages/          # Full-page route components (Settings, Profile, Home)
 │   │   ├── App.jsx         # Routing & Protected Route setup
 │   │   └── index.css       # Design system & Tailwind 4 config
 │   └── package.json
@@ -70,20 +71,21 @@ Grain/
 - `POST /api/auth/signup` - Register with role selection.
 - `POST /api/auth/login` - Receive initial Access & Refresh tokens.
 - `POST /api/auth/refresh` - Swap an old refresh token for a new pair (Rotation).
-- `POST /api/auth/logout` - [Protected] Invalidate current session and blocklist token.
-- `POST /api/auth/logout-all` - [Protected] Invalidate sessions on all devices.
-- `GET /api/auth/verify` - [Protected] Heartbeat endpoint for session validation.
+- `POST /api/auth/logout-all` - Invalidate sessions on all devices.
+- `GET /api/auth/verify` - Heartbeat endpoint for session validation.
 
-### 📚 Course Management
+### 📚 Course & Content
 - `GET /api/courses` - List all active courses.
-- `GET /api/courses/search` - Real-time title/category search.
+- `GET /api/courses/search` - Advanced search (Title/Description).
 - `POST /api/courses/add` - [Admin] Create a new course curriculum.
 - `PUT /api/courses/:id` - [Admin] Update existing course details.
 - `DELETE /api/courses/:id` - [Admin] Remove a course from the platform.
 
-### 👤 Profile & Social
+### 👤 Profile & Wishlist
 - `GET /api/profile` - [Protected] Get personal dashboard data.
-- `POST /api/wishlist/toggle` - [Protected] Manage saved courses.
+- `PUT /api/profile` - [Protected] Update username and email.
+- `GET /api/wishlist` - [Protected] Fetch user's saved courses.
+- `DELETE /api/wishlist/:courseId` - [Protected] Remove course from wishlist.
 
 ---
 
