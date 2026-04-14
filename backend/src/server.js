@@ -13,7 +13,12 @@ const courseRoutes = require("./routes/course.routes");
 const wishlistRoutes = require("./routes/wishlist.routes");
 const profileRoutes = require("./routes/profile.routes");
 
+const connectDB = require("./config/db");
+
 const app = express();
+
+// Connect to Database
+connectDB();
 
 /**
  * System Middleware
@@ -39,8 +44,7 @@ app.get("/", (req, res) => {
 });
 
 /**
- * Database Connection & Server Initialization
+ * Server Initialization
  */
-mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/eduapp")
-  .then(() => app.listen(3231, () => console.log("✅ Server running on port 3230")))
-  .catch(err => console.error("MongoDB connection failed", err));
+const PORT = process.env.PORT || 3231;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
