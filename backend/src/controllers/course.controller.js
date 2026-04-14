@@ -96,7 +96,14 @@ exports.getCourseById = async (req, res) => {
 exports.searchCourses = async (req, res) => {
   try {
     const { name } = req.query;
-    const courses = await Course.find({ title: { $regex: name, $options: "i" } });
+    if (!name) return res.json([]);
+    
+    const courses = await Course.find({
+      $or: [
+        { title: { $regex: name, $options: "i" } },
+        { description: { $regex: name, $options: "i" } }
+      ]
+    });
     res.json(courses);
   } catch (err) {
     res.status(500).json({ message: "Search failed" });
