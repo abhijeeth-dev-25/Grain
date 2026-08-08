@@ -118,3 +118,4 @@ Grain is licensed under the MIT License. See `LICENSE` for more details.
 
 ---
 
+*Built with ❤️ by the Grain Development Team.*
